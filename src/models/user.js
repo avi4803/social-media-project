@@ -1,11 +1,11 @@
 import mongoose, { mongo } from "mongoose";
 import {ObjectId} from "bson"
-import isEmail from "validator/lib/isEmail";
+import bcrypt from 'bcrypt';
 
 
 const userSchema =  new mongoose.Schema({
     email: {
-        validate: [isEmail, 'Invalid Email'],
+        type:String,
         required: true,
         unique:true
     } ,
@@ -13,16 +13,31 @@ const userSchema =  new mongoose.Schema({
         type: String,
         required:true,
     },
+    name:{
+        type: String,
+        required:true,
+    },
     bio: {
-        type: Number, 
+        type: String,
+        maxlength: 280 
     },
     tweets:[
         {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Tweet'
         }
     ]
    
 
+})
+
+//encrypting password before storing
+userSchema.pre('save' , function(next){
+    const user = this;
+    const salt = bcrypt.genSaltSync(9);
+    const encryptedPassword = bcrypt.hashSync(user.password, salt);
+    user.password = encryptedPassword;
+    next();
 })
 
 
