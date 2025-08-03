@@ -33,4 +33,27 @@ async function signUp(req , res){
 }
 
 
-export { signUp }
+async function signIn(req, res) {
+    try {
+        const user = await userService.signIn({
+            email: req.body.email,
+            password: req.body.password
+        });
+
+        SuccessResponse.message = "User signed In"
+        return res
+                  .status(StatusCodes.OK)
+                  .json(SuccessResponse);
+        
+    } catch (error) {
+        ErrorResponse.error = error;  
+        return res
+                 .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                 .json(ErrorResponse.error)
+        
+    }
+    
+}
+
+
+export { signUp , signIn }

@@ -24,27 +24,32 @@ class UserService{
     }
 
 
-async signIn(UserId){
-    
-
+async signIn(data){
     try {
-        const User = await this.UserRepository.get({_id: UserId});
+        const email = data.email
+        const currentPassword = data.password;
+        const userArray = await this.UserRepository.getUserByEmail(email);
+        if(!userArray || userArray.length === 0){
+            throw new AppError('User not found', StatusCodes.BAD_REQUEST)
+        }
+        const user = userArray[0];
         
-        return User[0]; // get() returns an array, so get the first element
-        
-    
+        if(!user.comparePassword(currentPassword)){
+            throw new AppError('Incorrect Password', StatusCodes.BAD_REQUEST)
+        }
+        return user;
+
     } catch (error) {
         console.log(error)
         if( error instanceof AppError){
             throw error
         }
-        throw new AppError('Cannot fetch User', StatusCodes.INTERNAL_SERVER_ERROR);
-        
-        
+        throw new AppError('Cannot SignIn', StatusCodes.INTERNAL_SERVER_ERROR);    
     }
-    
+}
+}
 
-}
-}
+
+
 
 export default UserService;
