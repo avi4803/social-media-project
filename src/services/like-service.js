@@ -1,12 +1,14 @@
 import { StatusCodes } from "http-status-codes";
 import LikeRepository from "../repository/like-repository.js";
 import TweetRepository from "../repository/tweet-repository.js";
+import CommentRepository from "../repository/comment-repository.js";
 import AppError from "../utils/errors/App-Error.js";
 
 class LikeService{
     constructor(){
         this.tweetRepository = new TweetRepository();
         this.likeRepository = new LikeRepository();
+        this.commentRepository = new CommentRepository();
     }
 
     async toggleLike(data){
@@ -19,6 +21,8 @@ class LikeService{
            
         }
         else if(data.modelType === 'Comment'){
+           const result = await this.commentRepository.get({_id: data.modelId});
+           likeable = result[0];
             
 
         }
